@@ -1,0 +1,15 @@
+syntax = "proto3";
+package fixbug;
+option cc_generic_services = true;
+message LoginResponse{
+    int32 errorcode=1;
+    bytes msg=2;
+}
+message LoginRequest{
+    bytes name=1;
+    bytes pwd=2;
+}
+service UserServiceRpc{
+    rpc Login(LoginRequest) returns(LoginResponse);
+
+}
