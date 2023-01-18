@@ -5,7 +5,8 @@
 #include "mrpcqueue.hpp"
 #include <string>
 #include <string.h>
-#define DEFAULT_LOGLEVEL INFO
+#define DEFAULT_LOGLEVEL DEBUG
+
 enum LogLevel{
     INFO,
     DEBUG,

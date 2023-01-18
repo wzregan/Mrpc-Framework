@@ -36,7 +36,7 @@ class UserService:public fixbug::UserServiceRpc{ // 注意这里是RPC服务端
 int main(int argc,char **argv){
 
     for(int i=0;i<10;i++){
-        LOG_FILE("你好啊，你有点吊阿");
+        MRPCLOG("你好啊，你有点吊阿");
         sleep(2);
     }
     //1.调用框架初始化 MrpcApplication::init();
