@@ -11,5 +11,4 @@ message LoginRequest{
 }
 service UserServiceRpc{
     rpc Login(LoginRequest) returns(LoginResponse);
-
 }

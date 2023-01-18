@@ -33,7 +33,7 @@ public:
         std::unordered_map<std::string,const google::protobuf::MethodDescriptor*> m_methods; // 保存服务方法
     };
     std::unordered_map<std::string,ServiceInfo> m_servicveMap;
-    
+    void ReponseCallBack(const TcpConnectionPtr& ptr,google::protobuf::Message *reponse);
 private:
     std::unique_ptr<muduo::net::TcpServer> m_tcpserverPtr;
     muduo::net::EventLoop m_loop;

@@ -5,8 +5,10 @@ using namespace muduo;
 #include <netinet/in.h>
 #include <iostream>
 #include <arpa/inet.h>
-#include <rpcheader.pb.h>
+#include "rpcheader.pb.h"
 #include <memory>
+#include <stdio.h>
+#include <bitset>
 typedef struct msg
 {
   int header_size;
@@ -14,6 +16,7 @@ typedef struct msg
 }Msg;
 
 int main(){
+
   int sock_fd = socket(PF_INET,SOCK_STREAM,0);
   sockaddr_in addr;
   addr.sin_family = AF_INET;
@@ -24,21 +27,19 @@ int main(){
     std::cout<<"连接失败";
     return 0;
   }
-  char d[100];
-  int len = 0;
-  int *header_size =(int*)d;
-  len+=4;
-  char * servicename = d+len;
-  strcpy(servicename,"UserService");
-  len=1+len+sizeof("UserService");
-  char * methodname = d+len;
-  strcpy(servicename,"Login");
+  string s="okokokasdas";
+  mrpc::RpcHeader h;
+  h.set_service_name("regan");
+  h.set_method_name("woaini");
+  h.set_arg_size(100);
 
-  len=1+len+sizeof("Login");
-  std::cout<<len<<","<<d+4<<d+10;  
-  *header_size = len;
+  string data = h.SerializeAsString();
+  int header_size = 21;
+  data = data.insert(0,(char*)&header_size,4);
+  std::cout<<int(data.substr(0,4).c_str()[1]);
 
-  send(sock_fd,(void*)&d,len+4,0);
+  send(sock_fd,(void*)&data,data.length()+2,0);
+
   return 0;
 }
 
