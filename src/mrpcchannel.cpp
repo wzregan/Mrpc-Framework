@@ -36,7 +36,7 @@ void MrpcChannel::CallMethod(const google::protobuf::MethodDescriptor* method,
     r->ParseFromArray(buffer+4+header_size,request_size);
     cout<<r->pwd();
     if(rscode==0){
-        cout<<"序列化失败...!";
+        controller->SetFailed("序列化失败...!");
         return;
     }
     int skfd = socket(PF_INET,SOCK_STREAM,0);
@@ -54,18 +54,18 @@ void MrpcChannel::CallMethod(const google::protobuf::MethodDescriptor* method,
     rscode = connect(skfd,(sockaddr*)&addr,sizeof(addr));
     
     if(rscode<0){
-        cout<<"远程连接失败...";
+        controller->SetFailed("远程连接失败...");
         return;
     }
     rscode = send(skfd,buffer,header_size+request_size+4,0);
     if(rscode<0){
-        cout<<"发起请求失败";
+        controller->SetFailed("发起请求失败...");
         return;
     }
     _unit8 *res_data = new _unit8[1024];
     rscode = recv(skfd,res_data,1024,0);
     if(rscode<0){
-        cout<<"接收返回值失败!";
+        controller->SetFailed("接收返回值失败...");
         return;
     }
     response->ParseFromArray(res_data,rscode);

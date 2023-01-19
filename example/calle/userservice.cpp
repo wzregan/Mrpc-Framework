@@ -10,6 +10,7 @@ class UserService:public fixbug::UserServiceRpc{ // 注意这里是RPC服务端
         cout<<"login name:"<<name<<endl;
         cout<<"login pwd:"<<pwd<<endl;
         cout<<"executing login method!.....";
+        return true;
     }
 
     // 1.caller  ==> Login(LoginRequest); ==> calle
@@ -37,7 +38,7 @@ int main(int argc,char **argv){
 
     for(int i=0;i<10;i++){
         MRPCLOG("你好啊，你有点吊阿");
-        sleep(2);
+        sleep(1);
     }
     //1.调用框架初始化 MrpcApplication::init();
     MrpcApplication::Init(argc,argv);

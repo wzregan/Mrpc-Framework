@@ -1,5 +1,6 @@
 #include "rpcprovider.h"
 #include "rpcheader.pb.h"
+#include "mrpclog.h"
 using namespace std;
 using _unite8 = unsigned char ;
 Rpcprovider::Rpcprovider(/* args */) {
@@ -96,7 +97,7 @@ void Rpcprovider::ReponseCallBack(const TcpConnectionPtr& conn,google::protobuf:
     if(isok){
         conn->send(data);
     }else{
-        cout<<"序列化失败！...\n";
+        LOG_ERROR("序列化返回值失败");
     }
     conn->shutdown(); // 主动断开连接
 }

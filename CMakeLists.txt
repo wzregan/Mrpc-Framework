@@ -18,13 +18,8 @@ link_directories(${PROJECT_SOURCE_DIR}/lib) # 库的搜索路径
 include_directories(${PROJECT_SOURCE_DIR}/src/include) # 包含目录
 
 
-
 # 添加子目录
 add_subdirectory(${PROJECT_SOURCE_DIR}/test) 
 add_subdirectory(${PROJECT_SOURCE_DIR}/example/calle)
 add_subdirectory(${PROJECT_SOURCE_DIR}/src)
 add_subdirectory(${PROJECT_SOURCE_DIR}/example/caller)
-set(SRC_LIST2   main.cpp src/rpcheader.pb.cc)
-
-add_executable(main ${SRC_LIST2})
-target_link_libraries(main  protobuf)
