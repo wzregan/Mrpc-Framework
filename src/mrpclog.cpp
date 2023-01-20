@@ -34,9 +34,6 @@ void MrpcLog::Log(std::string  msg) {
 void MrpcLog::setLevel(LogLevel level) {
     m_level = level;
 }
-void MrpcLog::setLevel(LogLevel level,std::string file_dir){
-    this->m_level = level;
-}
 
 MrpcLog& MrpcLog::Instance()
 {   

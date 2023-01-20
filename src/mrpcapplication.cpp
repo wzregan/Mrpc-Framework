@@ -2,6 +2,7 @@
 #include <string>
 #include <iostream>
 #include <unistd.h>
+#include "mrpclog.h"
 MrpcApplication MrpcApplication::app;
 void MrpcApplication::Init(int argc,char **args) {
     char c;
@@ -13,7 +14,7 @@ void MrpcApplication::Init(int argc,char **args) {
             file_name = optarg;
             break;
         default:
-            std::cout<<"input invalid option!\n";
+            LOG_ERROR("input invalid option!\n");
             break;
         }
     }

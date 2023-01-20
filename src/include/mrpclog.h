@@ -17,7 +17,6 @@ class MrpcLog{
 public:
     void Log(std::string  msg);
     void setLevel(LogLevel level);
-    void setLevel(LogLevel level,std::string filename);
 
     static MrpcLog& Instance();
     MrpcLogQueue<std::string> m_queue;
