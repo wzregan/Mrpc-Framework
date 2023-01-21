@@ -9,7 +9,7 @@
 
 class ZkClient {
 public:
-    ZkClient();
+    ZkClient(std::string ip, int port);
     ~ZkClient();
 public:
     void connect();
@@ -18,7 +18,8 @@ public:
 
 public:
     zhandle_t  *m_handle;
-
+    std::string  ip;
+    int port;
 };
 
 

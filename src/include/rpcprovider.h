@@ -32,7 +32,7 @@ public:
         google::protobuf::Service * m_services; // 保存服务对象
         std::unordered_map<std::string,const google::protobuf::MethodDescriptor*> m_methods; // 保存服务方法
     };
-    std::unordered_map<std::string,ServiceInfo> m_servicveMap;
+    std::unordered_map<std::string,ServiceInfo> m_servicemap;
     void ReponseCallBack(const TcpConnectionPtr& ptr,google::protobuf::Message *reponse);
 private:
     std::unique_ptr<muduo::net::TcpServer> m_tcpserverPtr;

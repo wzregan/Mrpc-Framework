@@ -6,8 +6,9 @@
 #include <netinet/in.h>
 #include <mrpcapplication.h>
 #include <memory>
-#include "user.pb.h"
 #include "rpcheader.pb.h"
+#include "ZkClient.h"
+#include <stdio.h>
 using _unit8 = unsigned char;
 void MrpcChannel::CallMethod(const google::protobuf::MethodDescriptor* method,
                                     google::protobuf::RpcController* controller, const google::protobuf::Message* request,
@@ -30,29 +31,41 @@ void MrpcChannel::CallMethod(const google::protobuf::MethodDescriptor* method,
     *header_size_op = header_size;
 
     rscode = rpcheader.SerializeToArray(buffer+4,header_size);
-    rscode = request->SerializeToArray(buffer+4+header_size,request_size);
-    fixbug::LoginRequest *r = new fixbug::LoginRequest();
+    if(request_size>0)
+        rscode = request->SerializeToArray(buffer+4+header_size,request_size);
 
-    r->ParseFromArray(buffer+4+header_size,request_size);
-    cout<<r->pwd();
     if(rscode==0){
         controller->SetFailed("序列化失败...!");
         return;
     }
+    string service_name = method->service()->name();
     int skfd = socket(PF_INET,SOCK_STREAM,0);
+
     MrpcConfig conf = MrpcApplication::Instance().config;
     sockaddr_in addr;
     // // 清空
     memset(&addr,0,sizeof(addr));
-    
-    
+
+    ZkClient zc(conf.zookeeperip,conf.zookeeperport);
+    zc.connect();
+    string request_path = "/service/" + service_name;
+    string hosts = zc.get(request_path.c_str());
+    int idx = hosts.find(":");
+    string  service_ip;
+    int service_port;
+    if(idx==std::string::npos){
+        controller->SetFailed("服务未注册!");
+        return;
+    }else{
+        service_ip = hosts. substr(0,idx);
+        service_port = atoi(hosts.substr(idx+1,5).c_str());
+    }
     // // 配置通信地址
     addr.sin_family = AF_INET;
-    addr.sin_port = htons(conf.rpcport);
-    addr.sin_addr.s_addr = inet_addr(conf.rpcip.c_str());
-    
+    addr.sin_port = htons(service_port);
+    addr.sin_addr.s_addr = inet_addr(service_ip.c_str());
     rscode = connect(skfd,(sockaddr*)&addr,sizeof(addr));
-    
+
     if(rscode<0){
         controller->SetFailed("远程连接失败...");
         return;

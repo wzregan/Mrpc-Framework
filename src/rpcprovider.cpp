@@ -1,6 +1,8 @@
 #include "rpcprovider.h"
 #include "rpcheader.pb.h"
 #include "mrpclog.h"
+#include "ZkClient.h"
+#include "mrpclog.h"
 using namespace std;
 using _unite8 = unsigned char ;
 Rpcprovider::Rpcprovider(/* args */) {
@@ -13,10 +15,10 @@ Rpcprovider::~Rpcprovider() {
 
 
 void Rpcprovider::Run() {
-    cout<<"runing.....\n";
     MrpcConfig config = MrpcApplication::Instance().config;
     string ip = config.rpcip;
     int port = config.rpcport;
+
     // 创建一个server对象
     muduo::net::TcpServer server(&m_loop,muduo::net::InetAddress(ip,port),"RPC_PROVIDER");
     // 设置连接回调函数
@@ -24,7 +26,15 @@ void Rpcprovider::Run() {
     // 设置消息回调
     server.setMessageCallback(std::bind(&Rpcprovider::OnMessage,this,std::placeholders::_1,std::placeholders::_2,std::placeholders::_3));
     // 设在muduo库的线程数量
-    server.setThreadNum(4); 
+    server.setThreadNum(4);
+    // 启动zookeeper服务
+    ZkClient zc(config.zookeeperip,config.zookeeperport);
+    zc.connect();
+    string host = config.zookeeperip+":"+ to_string(config.rpcport);
+    for(auto it = m_servicemap.begin(); it !=m_servicemap.end();it++){
+        string serviceName = "/service/" + it->first;
+        zc.create(serviceName.c_str(),host.c_str(),host.size());
+    }
     //启动服务
     server.start();
     //启动循环
@@ -36,7 +46,7 @@ void Rpcprovider::OnConnection(const TcpConnectionPtr& conn){
     }
 }
 void Rpcprovider::OnMessage(const TcpConnectionPtr& conn,Buffer* buffer,Timestamp ts){
-    cout<<"有消息来了:\n";
+    LOG_DEBUG("有消息来了");
     //首先把消息取出来
     size_t readableSize = buffer->readableBytes();
     uint8_t * data = new uint8_t[readableSize];
@@ -65,9 +75,9 @@ void Rpcprovider::OnMessage(const TcpConnectionPtr& conn,Buffer* buffer,Timestam
     std::cout<<m_name<<std::endl;
     std::cout<<argsize<<std::endl;
     // 然后在开始寻找服务和对应服务的方法
-    auto it = m_servicveMap.find(s_name);
+    auto it = m_servicemap.find(s_name);
     // if no service founded . . . . . .
-    if(it==m_servicveMap.end()){
+    if(it == m_servicemap.end()){
         return;
     }
     google::protobuf::Service *service= it->second.m_services;
@@ -117,5 +127,5 @@ void Rpcprovider::NotifyService(google::protobuf::Service *service){
         const google::protobuf::MethodDescriptor * method = descriptor->method(i);
         info.m_methods.insert({method->name(),method});
     }  
-    m_servicveMap.insert({service_name,info});
+    m_servicemap.insert({service_name, info});
 }

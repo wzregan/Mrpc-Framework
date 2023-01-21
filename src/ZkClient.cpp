@@ -45,9 +45,6 @@ void competion_get(int rc, const char *value, int value_len,
     sem_post(&(msg->sem));
 
 }
-ZkClient::ZkClient():m_handle(nullptr){
-
-}
 
 // 判断zookeeper的句柄是否为null
 ZkClient::~ZkClient() {
@@ -57,8 +54,8 @@ ZkClient::~ZkClient() {
 }
 // 连接zook server
 void ZkClient::connect() {
-    MrpcConfig config = MrpcApplication::Instance().config;
-    string host = config.zookeeperip+":" + to_string(config.zookeeperport);
+    string host = ip+":" + to_string(port);
+    zoo_set_debug_level(ZOO_LOG_LEVEL_ERROR);
     m_handle = zookeeper_init(host.c_str(),wathcer,30000,nullptr, nullptr,0);
     if(m_handle == nullptr){
         LOG_ERROR("Zookeeper初始化失败!");
@@ -102,6 +99,10 @@ void ZkClient::create(const char *path, const char *data, int datalen) {
     }else{
         LOG_ERROR("结点创建失败，错误代码：%d",msg.rc);
     }
+}
+
+ZkClient::ZkClient(string ip, int port):m_handle(nullptr),ip(ip),port(port){
+
 }
 
 

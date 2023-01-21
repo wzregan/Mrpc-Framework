@@ -12,3 +12,13 @@ message LoginRequest{
 service UserServiceRpc{
     rpc Login(LoginRequest) returns(LoginResponse);
 }
+message ListUserReponse{
+    repeated  bytes  usernames=1;
+}
+message ListUserRequest{
+
+}
+service ManageServiceRpc{
+    rpc Login(LoginRequest) returns(LoginResponse);
+    rpc ListUser(ListUserRequest) returns(ListUserReponse);
+}
